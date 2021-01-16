@@ -1,0 +1,20 @@
+.c-button {
+  color: #fff;
+  border: none;
+  padding: 1rem;
+  background-color: royalblue;
+  box-shadow: 1px 0 4px gray;
+  cursor: pointer;
+
+  &--stop {
+    background-color: gray;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
+}

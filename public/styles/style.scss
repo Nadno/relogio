@@ -13,4 +13,16 @@ body {
   background-color: #f5f5f5;
 }
 
-@import "./c-time-input";
+main {
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@import "./components/c-time-input";
+@import "./components/c-button";
+
+@import "./layouts/l-settings";

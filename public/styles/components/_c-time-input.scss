@@ -1,8 +1,12 @@
 .c-time-input {
-  width: calc(3 * 5rem);
-  font-size: 2.4rem;
+  width: 20rem;
   display: flex;
+  font-size: 2.4rem;
+  padding: 0.5rem;
+  border-radius: 2rem;
   background-color: #fff;
+  box-shadow: 1px 1px 4px gray;
+  margin: 2rem 0;
 
   .time {
     width: 5rem;
@@ -10,5 +14,6 @@
     text-align: center;
     border: none;
     display: flex;
+    background-color: initial;
   }
 }
