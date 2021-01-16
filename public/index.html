@@ -17,9 +17,33 @@
     <main>
       <div class="l-settings">
         <div id="time" class="c-time-input">
-          <input class="time" type="text" name="hours" id="hours" value="hh" min="0" max="99">:
-          <input class="time" type="text" name="minutes" id="minutes" value="mm" min="0" max="60">:
-          <input class="time" type="text" name="seconds" id="seconds" value="ss" min="0" max="60">
+          <input
+            class="time"
+            type="text"
+            name="hours"
+            id="hours"
+            value="hh"
+            min="0"
+            max="99"
+          />:
+          <input
+            class="time"
+            type="text"
+            name="minutes"
+            id="minutes"
+            value="mm"
+            min="0"
+            max="60"
+          />:
+          <input
+            class="time"
+            type="text"
+            name="seconds"
+            id="seconds"
+            value="ss"
+            min="0"
+            max="60"
+          />
         </div>
         <div>
           <button class="c-button" id="start">START</button>
@@ -28,7 +52,11 @@
       </div>
 
       <div class="c-clock">
-        <span id="clock-time">00:00:00</span>
+        <div id="clock-hours"><span class="second-decimal">0</span><span class="first-decimal">0</span></div>
+        :
+        <div id="clock-minutes"><span class="second-decimal">0</span><span class="first-decimal">0</span></div>
+        :
+        <div id="clock-seconds"><span class="second-decimal">0</span><span class="first-decimal">0</span></div>
       </div>
     </main>
   </body>
