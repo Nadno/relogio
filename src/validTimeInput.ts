@@ -9,13 +9,13 @@ const setMaxAndMinValue = (MAX_INPUT_VALUE: number, MIN_INPUT_VALUE = 0) =>
     input.value = formatTimeUnit(value);
   };
 
-const NINETY_NINE = 99;
-const SIXTY = 59;
+const hours = 99;
+const secondAndMinutes = 59;
 
 const validInput = {
-  hours: setMaxAndMinValue(NINETY_NINE),
-  minutes: setMaxAndMinValue(SIXTY),
-  seconds: setMaxAndMinValue(SIXTY),
+  hours: setMaxAndMinValue(hours),
+  minutes: setMaxAndMinValue(secondAndMinutes),
+  seconds: setMaxAndMinValue(secondAndMinutes),
 };
 
 export default validInput;
