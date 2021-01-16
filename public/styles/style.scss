@@ -18,11 +18,13 @@ main {
   height: 100vh;
 
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
 }
 
 @import "./components/c-time-input";
 @import "./components/c-button";
+@import "./components/c-clock";
 
 @import "./layouts/l-settings";
