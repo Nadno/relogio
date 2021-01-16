@@ -1,10 +1,10 @@
 import progressiveClock from "./clockUp";
-import regressiveClock from "./clockDown";
 
-import { formatTimeUnit, secondsToReadableTime } from "./formatTime";
+import { formatTimeUnit } from "./formatTime";
 import { changeInputUnit, focusInputUnit, validInputUnit } from "./inputEvents";
 
 import "../public/styles/style.scss";
+import createRenderTime from "./renderReadableTime";
 
 const inputsTimeUnits = Array.from(
   document.querySelectorAll<HTMLInputElement>(".time")
@@ -26,31 +26,43 @@ inputsTimeUnits.forEach((unitInput) => {
 const start = document.getElementById("start");
 const stop = document.getElementById("stop");
 const clock = progressiveClock();
+
+const getElementClockUnit = (id: string) => Array.from(document.getElementById(id).querySelectorAll("span")).slice(-2);
+
+const render = createRenderTime({
+  hours: getElementClockUnit("clock-hours"),
+  minutes: getElementClockUnit("clock-minutes"),
+  seconds: getElementClockUnit("clock-seconds"),
+});
+
 let inProgress = false;
+console.dir(clock);
 
 start.addEventListener("click", (e: MouseEvent) => {
   if (inProgress) return;
 
   const time = getTime();
-  const element = document.getElementById("clock-time");
+  const element = document.querySelector(".c-clock");
 
-  const renderReadableTime = (UTCTime) => {
+  clock.setStartAction((UTCTime) => {
+    render.renderReadableTime(UTCTime);
     element.classList.add("c-clock--active");
-    element.innerHTML = secondsToReadableTime(UTCTime);
-  }
+    inProgress = true;
+  });
   
   clock.setStopAction(() => {
+    render.resetRenderCurrentTime();
     element.classList.remove("c-clock--active");
+    inProgress = false;
   });
 
-  clock.setTickAction(renderReadableTime)
+  clock.setTickAction(render.renderReadableTime)
 
-  clock.start("00:00:00", time);
-  inProgress = true;
+  element.classList.add("c-clock--active");
+  clock.start("00:00:55", time);
 });
 
 stop.addEventListener("click", (e: MouseEvent) => {
   if (!inProgress) return;
   clock.stop();
-  inProgress = false;
 })
