@@ -1,10 +1,19 @@
-import { readableTimeToSeconds, secondsToReadableTime } from "./formatTime";
-interface TickAction {
-  (UTCTime: number): void;
+import { readableTimeToSeconds } from "./formatTime";
+interface Clock {
+  setTickAction(action: (UTCTime: number) => void): void;
+  setStartAction(action: (UTCTime: number) => void): void;
+  setStopAction(action: () => void): void;
+  start(from: string, to: string): void;
+  stop(): void;
+  tick?: Function;
 }
 
-const clock = {
-  setTickAction(callback: TickAction = () => {}) {
+const clock: Clock = {
+  setTickAction(callback) {
+    this.tickAction = callback;
+  },
+
+  setStartAction(callback) {
     this.startAction = callback;
   },
 
@@ -13,19 +22,21 @@ const clock = {
 
     if (from) this.from = readableTimeToSeconds(from);
     if (to) this.to = readableTimeToSeconds(to);
+    
+    if (this.startAction) this.startAction(this.from);
 
     this.tickID = setInterval(() => {
       this.tick();
     }, oneSecond);
   },
 
-  setStopAction(callback: Function = () => {}) {
+  setStopAction(callback: Function = null) {
     this.stopAction = callback;
   },
 
   stop() {
+    if (this.stopAction) this.stopAction();
     clearInterval(this.tickID);
-    this.stopAction();
     this.from = 0;
   },
 };
