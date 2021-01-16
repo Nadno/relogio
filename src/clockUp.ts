@@ -3,7 +3,7 @@ import clock from "./clock";
 const progressiveCounter = {
   tick() {
     this.from++;
-    if (this.from > 0) this.startAction(this.from);
+    if (this.tickAction && this.from > 0) this.tickAction(this.from); 
     if (this.from >= this.to) this.stop();
   },
 }
