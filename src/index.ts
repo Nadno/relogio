@@ -1,55 +1,56 @@
 import progressiveClock from "./clockUp";
 import regressiveClock from "./clockDown";
 
+import { formatTimeUnit, secondsToReadableTime } from "./formatTime";
+import { changeInputUnit, focusInputUnit, validInputUnit } from "./inputEvents";
+
 import "../public/styles/style.scss";
-import validInput from "./validTimeInput";
 
-const time = Array.from(document.querySelectorAll<HTMLInputElement>(".time"));
+const inputsTimeUnits = Array.from(
+  document.querySelectorAll<HTMLInputElement>(".time")
+);
+const getTime = () =>
+  inputsTimeUnits
+    .map(({ value }) => {
+      if (isNaN(Number(value))) return "00";
+      return formatTimeUnit(value);
+    })
+    .join(":");
 
-const timeComponent = document.querySelector<HTMLDivElement>("#time");
-
-const inputStep = {
-  ArrowLeft: (element: HTMLElement) => {
-    const previousSibling = element.previousElementSibling as HTMLInputElement;
-    if (previousSibling) previousSibling.select();
-  },
-  ArrowRight: (element: HTMLElement) => {
-    const nextSibling = element.nextElementSibling as HTMLInputElement;
-    if (nextSibling) nextSibling.select();
-  },
-}
-
-time.forEach((unitInput) => {
-  unitInput.oninput = () => {
-    const nextUnitInput = unitInput.nextElementSibling as HTMLInputElement;
-
-    if (isNaN(Number(unitInput.value))) {
-      unitInput.value = "";
-      return;
-    }
-
-    if (!nextUnitInput) {
-      validInput.seconds(Number(unitInput.value), unitInput);
-      return;
-    }
-    
-    if (unitInput.value.length === 2) {
-      nextUnitInput.select();
-      validInput[unitInput.id](Number(unitInput.value), unitInput);
-    }
-  };
-
-  unitInput.addEventListener("focus", () => {
-    unitInput.select();
-  });
-
-  
-
-
-  unitInput.addEventListener("keydown", (e: KeyboardEvent) => {
-    if (e.key.includes("Arrow")) {
-      e.preventDefault();
-      if (inputStep[e.key]) inputStep[e.key](e.target);
-    }
-  });
+inputsTimeUnits.forEach((unitInput) => {
+  unitInput.addEventListener("input", validInputUnit);
+  unitInput.addEventListener("focus", focusInputUnit);
+  unitInput.addEventListener("keydown", changeInputUnit);
 });
+
+const start = document.getElementById("start");
+const stop = document.getElementById("stop");
+const clock = progressiveClock();
+let inProgress = false;
+
+start.addEventListener("click", (e: MouseEvent) => {
+  if (inProgress) return;
+
+  const time = getTime();
+  const element = document.getElementById("clock-time");
+
+  const renderReadableTime = (UTCTime) => {
+    element.classList.add("c-clock--active");
+    element.innerHTML = secondsToReadableTime(UTCTime);
+  }
+  
+  clock.setStopAction(() => {
+    element.classList.remove("c-clock--active");
+  });
+
+  clock.setTickAction(renderReadableTime)
+
+  clock.start("00:00:00", time);
+  inProgress = true;
+});
+
+stop.addEventListener("click", (e: MouseEvent) => {
+  if (!inProgress) return;
+  clock.stop();
+  inProgress = false;
+})
