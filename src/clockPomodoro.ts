@@ -2,7 +2,13 @@ import clock from "./clock";
 
 import { minutesToSeconds } from "./formatTime";
 
-const pomodoroCounter = {
+interface PomodoroClock {
+  pause(): void;
+  restart(): void;
+  tick(): void;
+}
+
+const pomodoroCounter: PomodoroClock = {
   tick() {
     this.from++;
     
