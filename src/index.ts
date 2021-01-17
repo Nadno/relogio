@@ -1,6 +1,6 @@
 import { formatTimeUnit } from "./formatTime";
 import { changeInputUnit, focusInputUnit, validInputUnit } from "./inputEvents";
-import selectClock, { ClockType } from "./startAndStopEvent";
+import selectClock, { ClockType } from "./createClockEvents";
 
 import "../public/styles/style.scss";
 
