@@ -1,7 +1,7 @@
 import { readableTimeToSeconds } from "./formatTime";
 interface Clock {
-  setTickAction(action: (UTCTime: number) => void): void;
-  setStartAction(action: (UTCTime: number) => void): void;
+  setTickAction(action: (UTCCurrentTime: number, UTCTime: number) => void): void;
+  setStartAction(action: (UTCCurrentTime: number) => void): void;
   setStopAction(action: () => void): void;
   start(from: string, to: string): void;
   stop(): void;

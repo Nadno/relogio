@@ -1,10 +1,8 @@
-import progressiveClock from "./clockUp";
-
 import { formatTimeUnit } from "./formatTime";
+import { startClock, stopClock } from "./startAndStopEvent";
 import { changeInputUnit, focusInputUnit, validInputUnit } from "./inputEvents";
 
 import "../public/styles/style.scss";
-import createRenderTime from "./renderReadableTime";
 
 const inputsTimeUnits = Array.from(
   document.querySelectorAll<HTMLInputElement>(".time")
@@ -25,44 +23,6 @@ inputsTimeUnits.forEach((unitInput) => {
 
 const start = document.getElementById("start");
 const stop = document.getElementById("stop");
-const clock = progressiveClock();
 
-const getElementClockUnit = (id: string) => Array.from(document.getElementById(id).querySelectorAll("span")).slice(-2);
-
-const render = createRenderTime({
-  hours: getElementClockUnit("clock-hours"),
-  minutes: getElementClockUnit("clock-minutes"),
-  seconds: getElementClockUnit("clock-seconds"),
-});
-
-let inProgress = false;
-console.dir(clock);
-
-start.addEventListener("click", (e: MouseEvent) => {
-  if (inProgress) return;
-
-  const time = getTime();
-  const element = document.querySelector(".c-clock");
-
-  clock.setStartAction((UTCTime) => {
-    render.renderReadableTime(UTCTime);
-    element.classList.add("c-clock--active");
-    inProgress = true;
-  });
-  
-  clock.setStopAction(() => {
-    render.resetRenderCurrentTime();
-    element.classList.remove("c-clock--active");
-    inProgress = false;
-  });
-
-  clock.setTickAction(render.renderReadableTime)
-
-  element.classList.add("c-clock--active");
-  clock.start("00:00:55", time);
-});
-
-stop.addEventListener("click", (e: MouseEvent) => {
-  if (!inProgress) return;
-  clock.stop();
-})
+start.addEventListener("click", startClock(getTime));
+stop.addEventListener("click", stopClock(getTime))
