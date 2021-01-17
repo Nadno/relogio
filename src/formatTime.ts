@@ -1,11 +1,11 @@
 export const formatTimeUnit = (value) => `0${Number.parseInt(value, 10)}`.slice(-2);
 
-export const secondsToReadableTime = (secondsUTC: number): string[][] => {
+export const secondsToReadableTime = (secondsUTC: number): number[] => {
   const hours = Math.floor(secondsUTC / 60 / 60);
   const minutes = Math.floor(secondsUTC / 60 - hours * 60);
   const seconds = secondsUTC % 60;
 
-  return [hours, minutes, seconds].map((value) => formatTimeUnit(value).split(""));
+  return [hours, minutes, seconds];
 };
 
 export const hoursToSeconds = (hours: number | string): number =>
