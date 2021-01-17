@@ -1,0 +1,30 @@
+.c-pop-up {
+  position: absolute;
+  width: 30vw;
+  padding: 2rem;
+  border-radius: 1rem;
+  background-color: #fff;
+  box-shadow: 1px 1px 4px gray;
+
+  right: 2rem;
+  bottom: 2rem;
+
+  span {
+    display: block;
+  }
+  
+  div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__message {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .c-button {
+    width: 40%;
+  }
+}

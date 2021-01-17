@@ -6,8 +6,16 @@
   box-shadow: 1px 0 4px gray;
   cursor: pointer;
 
+  &--confirm {
+    background-color: seagreen;
+  }
+
   &--stop {
     background-color: gray;
+  }
+
+  &--reject {
+    background-color: tomato;
   }
 
   &:hover {
