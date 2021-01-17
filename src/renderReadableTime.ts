@@ -1,22 +1,25 @@
-import { secondsToReadableTime } from "./formatTime";
+import { formatTimeUnit, secondsToReadableTime } from "./formatTime";
 
-const createRenderTime = (timeElement: {
-  readonly hours: ReadonlyArray<HTMLElement>;
-  readonly minutes: ReadonlyArray<HTMLElement>;
-  readonly seconds: ReadonlyArray<HTMLElement>;
-}, progressBarElement?: HTMLElement) => {
+const createRenderTime = (
+  timeElement: {
+    readonly hours: ReadonlyArray<HTMLElement>;
+    readonly minutes: ReadonlyArray<HTMLElement>;
+    readonly seconds: ReadonlyArray<HTMLElement>;
+  },
+  progressBarElement?: HTMLElement
+) => {
   const hours = ["0", "0"],
     minutes = ["0", "0"],
     seconds = ["0", "0"];
   const currentTime = [hours, minutes, seconds];
-  const elementTimeUnit = ["hours", "minutes", "seconds"]
+  const elementTimeUnit = ["hours", "minutes", "seconds"];
 
   const resetRenderedTime = () => {
     currentTime.forEach((unit, index) => {
       const element = elementTimeUnit[index];
       timeElement[element][0].innerHTML = "0";
       timeElement[element][1].innerHTML = "0";
-      
+
       unit[0] = "0";
       unit[1] = "0";
     });
@@ -62,7 +65,9 @@ const createRenderTime = (timeElement: {
   };
 
   const renderReadableTime = (UTCCurrentTime: number, UTCTime?: number) => {
-    secondsToReadableTime(UTCCurrentTime).forEach(renderChangedUnits);
+    secondsToReadableTime(UTCCurrentTime)
+      .map((value) => formatTimeUnit(value).split(""))
+      .forEach(renderChangedUnits);
 
     if (UTCTime && progressBarElement) {
       const percentage = (UTCCurrentTime * 100) / UTCTime;
