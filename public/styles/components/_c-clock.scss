@@ -3,6 +3,15 @@
   font-size: 5rem;
   color: gray;
 
+  div {
+    overflow: hidden;
+    display: inherit;
+  }
+
+  span {
+    display: block;
+  }
+
   &--active {
     color: black;
   }
