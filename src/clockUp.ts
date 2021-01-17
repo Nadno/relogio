@@ -1,4 +1,4 @@
-import clock from "./clock";
+import createClock from "./clock";
 
 const progressiveCounter = {
   tick() {
@@ -9,8 +9,8 @@ const progressiveCounter = {
 }
 
 const progressiveClock = () => ({
-  ...clock,
+  ...createClock(),
   ...progressiveCounter,
 })
 
-export default progressiveClock
+export default progressiveClock;

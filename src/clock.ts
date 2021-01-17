@@ -1,11 +1,11 @@
-import { readableTimeToSeconds } from "./formatTime";
-interface Clock {
+import { readableTimeToSeconds, formatTimeUnit } from "./formatTime";
+export interface Clock {
   setTickAction(action: (UTCCurrentTime: number, UTCTime: number) => void): void;
-  setStartAction(action: (UTCCurrentTime: number) => void): void;
+  setStartAction(action: (from: number, to: number) => void): void;
   setStopAction(action: () => void): void;
-  start(from: string, to: string): void;
+  start(from?: string, to?: string): void;
   stop(): void;
-  tick?: Function;
+  tick?(): void;
 }
 
 const clock: Clock = {
@@ -17,13 +17,13 @@ const clock: Clock = {
     this.startAction = callback;
   },
 
-  start(from: string = "", to: string = "") {
+  start(from = "", to = "") {
     const oneSecond = 1000;
 
-    if (from) this.from = readableTimeToSeconds(from);
-    if (to) this.to = readableTimeToSeconds(to);
+    if (from && !this.from) this.from = readableTimeToSeconds(from);
+    if (to && !this.to) this.to = readableTimeToSeconds(to);
     
-    if (this.startAction) this.startAction(this.from);
+    if (this.startAction) this.startAction(this.from, this.to);
 
     this.tickID = setInterval(() => {
       this.tick();
@@ -41,5 +41,17 @@ const clock: Clock = {
   },
 };
 
+const clocker = {
+  tick() {
+    const date = new Date();
+    const UTCTime = [date.getHours(), date.getMinutes(), date.getSeconds()];
+    if (this.tickAction) this.tickAction(UTCTime.map(value => formatTimeUnit(value)).join(":")); 
+  },
+}
 
-export default clock;
+const createClock = () => ({
+  ...clock,
+  ...clocker,
+});
+
+export default createClock;

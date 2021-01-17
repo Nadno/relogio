@@ -1,17 +1,17 @@
-import clock from "./clock";
+import createClock from "./clock";
 
 import { secondsToReadableTime } from "./formatTime";
 
 const regressiveCounter = {
   tick() {
-    this.from--;
-    console.log(secondsToReadableTime(this.from));
-    if (this.from <= this.to) this.stop();
+    this.to--;
+    if (this.tickAction) this.tickAction(this.to, this.from); 
+    if (this.to <= this.from) this.stop();
   },
 };
 
 const regressiveClock = () => ({
-  ...clock,
+  ...createClock(),
   ...regressiveCounter,
 })
 
