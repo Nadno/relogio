@@ -1,3 +1,5 @@
+const track = document.querySelector("audio");
+
 const confirmPopUp = (message?: string): Promise<boolean> => {
   const popUp = document.createElement("div");
   const buttonsContainer =document.createElement("div");
@@ -24,6 +26,9 @@ const confirmPopUp = (message?: string): Promise<boolean> => {
   popUp.insertAdjacentElement("beforeend", buttonsContainer);
   
   document.body.insertAdjacentElement("beforeend", popUp);
+
+  
+  track.play();
 
   return new Promise((resolve, reject) => {
     function resolveEvent() {
