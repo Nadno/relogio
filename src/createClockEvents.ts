@@ -37,9 +37,9 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
     progressive() {
       const clock = progressiveClock();
 
-      clock.setStartAction((from) => {
+      clock.setStartAction((from, to) => {
         defaultClockStartAction();
-        render.renderReadableTime(from);
+        render.renderReadableTime(from, to);
       });
       clock.setTickAction(render.renderReadableTime);
       clock.setStopAction(defaultClockStopAction);
@@ -52,11 +52,11 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
 
       clock.setStartAction((_, to) => {
         defaultClockStartAction();
-        render.renderReadableTime(to);
+        render.renderReadableTime(to, to);
       });
       clock.setTickAction(render.renderReadableTime);
       clock.setStopAction(defaultClockStopAction);
-
+      
       return clock;
     },
 

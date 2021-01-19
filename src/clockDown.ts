@@ -4,9 +4,12 @@ import { secondsToReadableTime } from "./formatTime";
 
 const regressiveCounter = {
   tick() {
-    this.to--;
-    if (this.tickAction) this.tickAction(this.to, this.from); 
-    if (this.to <= this.from) this.stop();
+    const progressiveFrom = this.to + this.from;
+    const regressiveTo = -this.to;
+    this.from--;
+    
+    if (this.tickAction) this.tickAction(progressiveFrom, this.to); 
+    if (this.from < regressiveTo) this.stop();
   },
 };
 

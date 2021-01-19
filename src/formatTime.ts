@@ -1,6 +1,6 @@
 export const formatTimeUnit = (value) => `0${Number.parseInt(value, 10)}`.slice(-2);
 
-export const secondsToReadableTime = (secondsUTC: number): number[] => {
+export const secondsToReadableTime = (secondsUTC: number): [hours: number, minutes: number, seconds: number] => {
   const hours = Math.floor(secondsUTC / 60 / 60);
   const minutes = Math.floor(secondsUTC / 60 - hours * 60);
   const seconds = secondsUTC % 60;

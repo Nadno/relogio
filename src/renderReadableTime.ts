@@ -8,17 +8,20 @@ const createRenderTime = (
   },
   progressBarElement?: HTMLElement
 ) => {
-  const hours = ["0", "0"],
-    minutes = ["0", "0"],
-    seconds = ["0", "0"];
+  const hours: string[] = ["0", "0"],
+    minutes: string[] = ["0", "0"],
+    seconds: string[] = ["0", "0"];
   const currentTime = [hours, minutes, seconds];
-  const elementTimeUnit = ["hours", "minutes", "seconds"];
+
+  const elementTimeUnits = ["hours", "minutes", "seconds"];
 
   const resetRenderedTime = () => {
     currentTime.forEach((unit, index) => {
-      const element = elementTimeUnit[index];
-      timeElement[element][0].innerHTML = "0";
-      timeElement[element][1].innerHTML = "0";
+      const element = elementTimeUnits[index];
+      const [firstMinUnitElement, secondMinUnitElement] = timeElement[element];
+
+      firstMinUnitElement.innerHTML = "0";
+      secondMinUnitElement.innerHTML = "0";
 
       unit[0] = "0";
       unit[1] = "0";
@@ -26,51 +29,65 @@ const createRenderTime = (
   };
 
   const startAnimate = (element: HTMLElement) => {
-    element.animate(
-      [
-        {
-          transform: "translateY(32px)",
-          opacity: 0,
-        },
-        {
-          transform: "translateY(0)",
-          opacity: 1,
-        },
-      ],
-      {
-        duration: 200,
-        fill: "forwards",
-      }
-    );
+    const to = {
+      transform: "translateY(32px)",
+      opacity: 0,
+    };
+    const from = {
+      transform: "translateY(0)",
+      opacity: 1,
+    };
+    const options: KeyframeAnimationOptions = {
+      duration: 200,
+      fill: "forwards",
+    };
+
+    element.animate([to, from], options);
   };
 
-  const setAndRenderTimeUnit = (unitIndex, decimalUnitIndex, value) => {
-    const element = elementTimeUnit[unitIndex];
+  const renderUnitAndUpdateCurrentTime = (value, unitIndex, minUnitIndex) => {
+    const unitElement = elementTimeUnits[unitIndex];
+    const minUnitElement = timeElement[unitElement][minUnitIndex];
 
-    currentTime[unitIndex][decimalUnitIndex] = value;
-    timeElement[element][decimalUnitIndex].innerHTML = value;
-    startAnimate(timeElement[element][decimalUnitIndex]);
+    minUnitElement.innerHTML = value;
+    startAnimate(minUnitElement);
+
+    currentTime[unitIndex][minUnitIndex] = value;
   };
 
-  const renderChangedUnits = ([decimalUnitTwo, decimalUnitOne], unitIndex) => {
-    const [currentUnitTwo, currentUnitOne] = currentTime[unitIndex];
+  const getTimeUnitAsArray = (value: number) =>
+    formatTimeUnit(value).split("") as [string, string];
 
-    if (decimalUnitOne !== currentUnitOne) {
-      setAndRenderTimeUnit(unitIndex, 1, decimalUnitOne);
+  const renderTimeUnit = (value: number, unitIndex: number) => {
+    const [secondMinUnit, firstMinUnit] = getTimeUnitAsArray(value);
+    const [secondRenderedMinUnit, firstRenderedMinUnit] = currentTime[
+      unitIndex
+    ];
+
+    if (firstMinUnit !== firstRenderedMinUnit) {
+      const FIRST_MIN_UNIT_INDEX = 1;
+      renderUnitAndUpdateCurrentTime(
+        firstMinUnit,
+        unitIndex,
+        FIRST_MIN_UNIT_INDEX
+      );
     }
 
-    if (decimalUnitTwo !== currentUnitTwo) {
-      setAndRenderTimeUnit(unitIndex, 0, decimalUnitTwo);
+    if (secondMinUnit !== secondRenderedMinUnit) {
+      const SECOND_MIN_UNIT_INDEX = 0;
+      renderUnitAndUpdateCurrentTime(
+        secondMinUnit,
+        unitIndex,
+        SECOND_MIN_UNIT_INDEX
+      );
     }
   };
 
-  const renderReadableTime = (UTCCurrentTime: number, UTCTime?: number) => {
-    secondsToReadableTime(UTCCurrentTime)
-      .map((value) => formatTimeUnit(value).split(""))
-      .forEach(renderChangedUnits);
+  const renderReadableTime = (currentTime: number, time?: number) => {
+    secondsToReadableTime(currentTime).forEach(renderTimeUnit);
 
-    if (UTCTime && progressBarElement) {
-      const percentage = (UTCCurrentTime * 100) / UTCTime;
+    if (progressBarElement) {
+      const percentage = (currentTime * 100) / time;
       progressBarElement.style.width = percentage.toFixed(2) + "%";
     }
   };
