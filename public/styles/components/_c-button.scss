@@ -4,6 +4,7 @@
   padding: 1rem;
   background-color: royalblue;
   box-shadow: 1px 0 4px gray;
+  clip-path: polygon(0 4%, 5% 4%, 5% 0, 100% 0, 100% 95%, 94% 95%, 94% 100%, 0 100%);
   cursor: pointer;
 
   &--confirm {

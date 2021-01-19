@@ -2,6 +2,7 @@
   margin: 0;
   padding: 0;
   outline: none;
+  box-sizing: border-box;
 }
 
 :root {
@@ -27,6 +28,7 @@ main {
 @import "./components/c-button";
 @import "./components/c-clock";
 @import "./components/c-pop-up";
+@import "./components/c-select-clock";
 
 @import "./layouts/l-settings";
 @import "./layouts/l-clock";
