@@ -1,6 +1,6 @@
-import createStopWatchClock from "./stopwatch";
-import createTimerClock from "./timer";
-import createPomodoroClock from "./pomodoro";
+import createStopwatch from "./stopwatch";
+import createTimer from "./timer";
+import createPomodoro from "./pomodoro";
 
 import confirmPopUp from "./confirmPopUp";
 import createClockRender, { UnitTimeElement } from "./clockRender";
@@ -43,7 +43,7 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
 
   const clocks = {
     stopwatch() {
-      const clock = createStopWatchClock();
+      const clock = createStopwatch();
 
       const startAction = (from, to) => {
         defaultClockStartAction();
@@ -58,7 +58,7 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
     },
 
     timer() {
-      const clock = createTimerClock();
+      const clock = createTimer();
 
       const startAction = (_, to) => {
         defaultClockStartAction();
@@ -73,7 +73,7 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
     },
 
     pomodoro() {
-      const clock = createPomodoroClock();
+      const clock = createPomodoro();
 
       clock.setStartAction((from) => {
         defaultClockStartAction();

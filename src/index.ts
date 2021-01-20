@@ -1,6 +1,7 @@
+import selectClock, { ClockType } from "./createClockEvents";
+
 import { formatTimeUnit } from "./utils/formatTime";
 import { changeInputUnit, focusInputUnit, validInputUnit } from "./inputEvents";
-import selectClock, { ClockType } from "./createClockEvents";
 
 import "../public/styles/style.scss";
 
@@ -10,7 +11,7 @@ const inputsTimeUnits = Array.from(
 const getTime = () =>
   inputsTimeUnits
     .map(({ value }) => {
-      if (isNaN(Number(value))) return "00";
+      if (!value.trim() || isNaN(Number(value))) return "00";
       return formatTimeUnit(value);
     })
     .join(":");
@@ -33,7 +34,6 @@ const selectClockEvent = () => {
   
   startButton.removeEventListener("click", selectedEvents?.startEvent);
   stopButton.removeEventListener("click", selectedEvents?.stopEvent);
-  console.log("selecionado: ", value)
 
   startButton.addEventListener("click", startEvent);
   stopButton.addEventListener("click", stopEvent);
