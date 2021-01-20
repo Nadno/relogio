@@ -8,7 +8,7 @@ export interface Clock {
   tick?(): void;
 }
 
-const clock: Clock = {
+export const clock: Clock = {
   setTickAction(callback) {
     this.tickAction = callback;
   },

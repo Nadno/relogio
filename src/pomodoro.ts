@@ -57,7 +57,7 @@ const pomodoroCounter = {
   },
 };
 
-const createPomodoroClock = (): PomodoroClock => ({
+const createPomodoro = (): PomodoroClock => ({
   pomodoroState: "pomodoro",
   from: 0,
   to: minutesToSeconds(25),
@@ -66,4 +66,4 @@ const createPomodoroClock = (): PomodoroClock => ({
   ...pomodoroCounter,
 });
 
-export default createPomodoroClock;
+export default createPomodoro;

@@ -11,9 +11,9 @@ const regressiveCounter = {
   },
 };
 
-const createTimerClock = () => ({
+const createTimer = () => ({
   ...createClock(),
   ...regressiveCounter,
 })
 
-export default createTimerClock;
+export default createTimer;
