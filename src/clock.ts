@@ -1,4 +1,4 @@
-import { readableTimeToSeconds, formatTimeUnit } from "./formatTime";
+import { readableTimeToSeconds, formatTimeUnit } from "./utils/formatTime";
 export interface Clock {
   setTickAction(action: (UTCCurrentTime: number, UTCTime: number) => void): void;
   setStartAction(action: (from: number, to: number) => void): void;

@@ -8,9 +8,9 @@ const progressiveCounter = {
   },
 }
 
-const progressiveClock = () => ({
+const createStopWatchClock = () => ({
   ...createClock(),
   ...progressiveCounter,
 })
 
-export default progressiveClock;
+export default createStopWatchClock;

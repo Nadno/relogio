@@ -1,4 +1,4 @@
-import { formatTimeUnit } from "./formatTime";
+import { formatTimeUnit } from "./utils/formatTime";
 
 const setMaxAndMinValue = (MAX_INPUT_VALUE: number, MIN_INPUT_VALUE = 0) => 
   (value: number, input: HTMLInputElement) => {

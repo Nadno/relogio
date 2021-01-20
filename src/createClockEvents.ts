@@ -1,13 +1,14 @@
-import progressiveClock from "./clockUp";
-import regressiveClock from "./clockDown";
-import pomodoroClock from "./clockPomodoro";
-import createRenderTime from "./renderReadableTime";
+import createStopWatchClock from "./stopwatch";
+import createTimerClock from "./timer";
+import createPomodoroClock from "./pomodoro";
+
 import confirmPopUp from "./confirmPopUp";
+import createClockRender, { UnitTimeElement } from "./clockRender";
 
 const getElementClockUnit = (id: string) =>
-  Array.from(document.getElementById(id).querySelectorAll("span")).slice(-2);
+  Array.from(document.getElementById(id).querySelectorAll("span")).slice(-2) as unknown as UnitTimeElement;
 
-const render = createRenderTime(
+const render = createClockRender(
   {
     hours: getElementClockUnit("clock-hours"),
     minutes: getElementClockUnit("clock-minutes"),
@@ -16,7 +17,7 @@ const render = createRenderTime(
   document.getElementById("progress-bar")
 );
 
-export type ClockType = "progressive" | "regressive" | "pomodoro";
+export type ClockType = "stopwatch" | "timer" | "pomodoro";
 
 const selectClock = (clockType: ClockType, getTime: () => string) => {
   const element = document.querySelector(".c-clock");
@@ -24,9 +25,16 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
 
   const defaultClockStartAction = () => {
     element.classList.add("c-clock--active");
-    render.resetRenderedTime();
+    render.resetClock();
     inProgress = true;
   };
+
+  const defaultTickAction = (currentTime: number, time?: number) => {
+    render.setClock(currentTime, time);
+
+    const percentage = (currentTime * 100) / time;
+    render.setProgressBar(percentage);
+  }
 
   const defaultClockStopAction = () => {
     element.classList.remove("c-clock--active");
@@ -34,42 +42,46 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
   };
 
   const clocks = {
-    progressive() {
-      const clock = progressiveClock();
+    stopwatch() {
+      const clock = createStopWatchClock();
 
-      clock.setStartAction((from, to) => {
+      const startAction = (from, to) => {
         defaultClockStartAction();
-        render.renderReadableTime(from, to);
-      });
-      clock.setTickAction(render.renderReadableTime);
+        render.setClock(from, to);
+      };
+
+      clock.setStartAction(startAction);
+      clock.setTickAction(defaultTickAction);
       clock.setStopAction(defaultClockStopAction);
 
       return clock;
     },
 
-    regressive() {
-      const clock = regressiveClock();
+    timer() {
+      const clock = createTimerClock();
 
-      clock.setStartAction((_, to) => {
+      const startAction = (_, to) => {
         defaultClockStartAction();
-        render.renderReadableTime(to, to);
-      });
-      clock.setTickAction(render.renderReadableTime);
+        render.setClock(to, to);
+      };
+
+      clock.setStartAction(startAction);
+      clock.setTickAction(defaultTickAction);
       clock.setStopAction(defaultClockStopAction);
-      
+
       return clock;
     },
 
     pomodoro() {
-      const clock = pomodoroClock();
+      const clock = createPomodoroClock();
 
       clock.setStartAction((from) => {
         defaultClockStartAction();
-        render.renderReadableTime(from);
+        render.setClock(from);
       });
-      clock.setTickAction(render.renderReadableTime);
+      clock.setTickAction(defaultTickAction);
       clock.setConfirmAction(confirmPopUp);
-      
+
       clock.setStopAction(defaultClockStopAction);
 
       return clock;

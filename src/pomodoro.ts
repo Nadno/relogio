@@ -1,6 +1,6 @@
 import createClock, { Clock } from "./clock";
 
-import { minutesToSeconds } from "./formatTime";
+import { minutesToSeconds } from "./utils/formatTime";
 
 interface PomodoroClock extends Clock {
   pomodoroState: "pomodoro" | "pause";
@@ -18,7 +18,7 @@ const pomodoroCounter = {
   resetClock() {
     this.pomodoroState = "pomodoro";
     this.from = 0;
-    this.to = 10;
+    this.to = minutesToSeconds(25);
   },
 
   tick() {
@@ -34,10 +34,10 @@ const pomodoroCounter = {
   },
 
   async pause() {
-    this.to = 5;
+    this.to = minutesToSeconds(5);
     this.stop();
 
-    await this.confirmAction("Congrats, now do you wanna start a pause?")
+    await this.confirmAction("Pomodoro complete, do you wanna start a pause?")
       .then(() => {
         this.start();
         this.pomodoroState = "pause";
@@ -46,9 +46,9 @@ const pomodoroCounter = {
   },
 
   async restart() {
-    this.to = 10;
+    this.to = minutesToSeconds(25);
     this.stop();
-    await this.confirmAction("Congrats, now do you wanna start another pomodoro?")
+    await this.confirmAction("Pomodoro time, do you wanna start it?")
       .then(() => {
         this.start();
         this.pomodoroState = "pomodoro";
@@ -57,13 +57,13 @@ const pomodoroCounter = {
   },
 };
 
-const pomodoroClock = (): PomodoroClock => ({
+const createPomodoroClock = (): PomodoroClock => ({
   pomodoroState: "pomodoro",
   from: 0,
-  to: 10, // minutesToSeconds(25)
+  to: minutesToSeconds(25),
 
   ...createClock(),
   ...pomodoroCounter,
 });
 
-export default pomodoroClock;
+export default createPomodoroClock;

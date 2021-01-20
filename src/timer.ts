@@ -1,7 +1,5 @@
 import createClock from "./clock";
 
-import { secondsToReadableTime } from "./formatTime";
-
 const regressiveCounter = {
   tick() {
     const progressiveFrom = this.to + this.from;
@@ -13,9 +11,9 @@ const regressiveCounter = {
   },
 };
 
-const regressiveClock = () => ({
+const createTimerClock = () => ({
   ...createClock(),
   ...regressiveCounter,
 })
 
-export default regressiveClock;
+export default createTimerClock;

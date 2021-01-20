@@ -1,4 +1,4 @@
-import { formatTimeUnit } from "./formatTime";
+import { formatTimeUnit } from "./utils/formatTime";
 import { changeInputUnit, focusInputUnit, validInputUnit } from "./inputEvents";
 import selectClock, { ClockType } from "./createClockEvents";
 
