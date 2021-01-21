@@ -32,6 +32,8 @@ const selectClockEvent = () => {
   const value = select.value as ClockType;
   const [startEvent, stopEvent] = selectClock(value, getTime);
   
+  selectedEvents?.stopEvent();
+
   startButton.removeEventListener("click", selectedEvents?.startEvent);
   stopButton.removeEventListener("click", selectedEvents?.stopEvent);
 
