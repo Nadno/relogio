@@ -1,6 +1,6 @@
-import createClock from "./clock";
+import { Clock, clock } from "./clock";
 
-const progressiveCounter = {
+const stopwatchClocker = {
   tick() {
     this.from++;
     if (this.tickAction && this.from > 0) this.tickAction(this.from, this.to); 
@@ -8,9 +8,11 @@ const progressiveCounter = {
   },
 }
 
-const createStopwatch = () => ({
-  ...createClock(),
-  ...progressiveCounter,
-})
+const createStopwatch = (): Clock => {
+  const newStopwatch = Object.create(clock);
+  return Object.assign(newStopwatch, {
+    ...stopwatchClocker,
+  });
+}
 
 export default createStopwatch;
