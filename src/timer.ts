@@ -1,6 +1,6 @@
-import createClock from "./clock";
+import { Clock, clock } from "./clock";
 
-const regressiveCounter = {
+const timerClocker = {
   tick() {
     const progressiveFrom = this.to + this.from;
     const regressiveTo = -this.to;
@@ -11,9 +11,11 @@ const regressiveCounter = {
   },
 };
 
-const createTimer = () => ({
-  ...createClock(),
-  ...regressiveCounter,
-})
+const createTimer = (): Clock => {
+  const newTimer = Object.create(clock);
+  return Object.assign(newTimer, {
+    ...timerClocker,
+  });
+}
 
 export default createTimer;
