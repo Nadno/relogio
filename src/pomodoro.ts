@@ -1,4 +1,4 @@
-import createClock, { Clock } from "./clock";
+import { Clock, clock } from "./clock";
 
 import { minutesToSeconds } from "./utils/formatTime";
 
@@ -14,7 +14,7 @@ interface PomodoroClock extends Clock {
   tick(): void;
 }
 
-const pomodoroCounter = {
+const pomodoroClocker = {
   resetClock() {
     this.pomodoroState = "pomodoro";
     this.from = 0;
@@ -57,13 +57,15 @@ const pomodoroCounter = {
   },
 };
 
-const createPomodoro = (): PomodoroClock => ({
-  pomodoroState: "pomodoro",
-  from: 0,
-  to: minutesToSeconds(25),
+const createPomodoro = (): PomodoroClock => {
+  const newPomodoro = Object.create(clock);
+  return Object.assign(newPomodoro, {
+    pomodoroState: "pomodoro",
+    from: 0,
+    to: minutesToSeconds(25),
 
-  ...createClock(),
-  ...pomodoroCounter,
-});
+    ...pomodoroClocker,
+  });
+};
 
 export default createPomodoro;
