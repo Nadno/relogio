@@ -2,7 +2,7 @@
 
 A aplicação possui três funcionalidades, a de pomodoro, timer e stopwatch.
 
-!(foto da aplicação)[https://i.pinimg.com/originals/58/4d/0e/584d0e5f50c810ceab4dc7d4ce1be2e4.jpg]
+![foto da aplicação](https://i.pinimg.com/originals/58/4d/0e/584d0e5f50c810ceab4dc7d4ce1be2e4.jpg)
 
 # Objetivo
 
