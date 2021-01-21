@@ -21,7 +21,7 @@ export const clock = {
     const oneSecond = 1000;
 
     if (from) this.from = readableTimeToSeconds(from);
-    if (to) this.to = readableTimeToSeconds(to);
+    if (to && !this.to) this.to = readableTimeToSeconds(to);
     
     if (this.startAction) this.startAction(this.from, this.to);
 

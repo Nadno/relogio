@@ -6,8 +6,7 @@ interface PomodoroClock extends Clock {
   pomodoroState: "pomodoro" | "pause";
   from?: number;
   to?: number;
-
-  setConfirmAction(confirm: (message?: string) => Promise<boolean>): void;
+  setConfirmEvent(startConfirmEvent: (message?: string) => void): void;
   resetClock(): void;
   restart(): void;
   pause(): void;
@@ -23,37 +22,55 @@ const pomodoroClocker = {
 
   tick() {
     this.from++;
+
     if (this.tickAction && this.from > 0) this.tickAction(this.from, this.to);
     if (this.from >= this.to) {
       this.pomodoroState === "pomodoro" ? this.pause() : this.restart();
     }
   },
 
-  setConfirmAction(confirm) {
-    this.confirmAction = confirm;
+  setConfirmEvent(startConfirmEvent) {
+    this.startConfirmEvent = startConfirmEvent;
   },
 
-  async pause() {
+  pause() {
     this.to = minutesToSeconds(5);
     this.stop();
 
-    await this.confirmAction("Pomodoro complete, do you wanna start a pause?")
-      .then(() => {
+    const confirmAction = (confirm: boolean) => {
+      if (confirm) {
         this.start();
         this.pomodoroState = "pause";
-      })
-      .catch(() => this.resetClock);
+        return;
+      }
+
+      this.resetClock();
+    };
+
+    this.startConfirmEvent(
+      "Pomodoro complete, do you wanna start a pause?",
+      confirmAction
+    );
   },
 
-  async restart() {
+  restart() {
     this.to = minutesToSeconds(25);
     this.stop();
-    await this.confirmAction("Pomodoro time, do you wanna start it?")
-      .then(() => {
+
+    const confirmAction = (confirm: boolean) => {
+      if (confirm) {
         this.start();
         this.pomodoroState = "pomodoro";
-      })
-      .catch(() => this.resetClock);
+        return;
+      }
+
+      this.resetClock();
+    };
+
+    this.startConfirmEvent(
+      "Pomodoro time, do you wanna start it?",
+      confirmAction
+    );
   },
 };
 

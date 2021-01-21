@@ -36,6 +36,7 @@ const createClockRender = (
     const minUnitElement = timeElement[unitElement][minUnitIndex];
 
     minUnitElement.innerHTML = value;
+    document.getElementById("clock").setAttribute("aria-current", value);
     startAnimate(minUnitElement);
   };
 
@@ -55,6 +56,7 @@ const createClockRender = (
   function setProgressBar(percentage: number) {
     try {
       progressBarElement.style.width = percentage.toFixed(2) + "%";
+      progressBarElement.setAttribute("aria-valuenow", percentage.toFixed(0));
     } catch (err) {
       throw new Error(err);
     }

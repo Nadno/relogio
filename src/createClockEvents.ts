@@ -80,7 +80,7 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
         render.setClock(from);
       });
       clock.setTickAction(defaultTickAction);
-      clock.setConfirmAction(confirmPopUp);
+      clock.setConfirmEvent(confirmPopUp);
 
       clock.setStopAction(defaultClockStopAction);
 

@@ -14,18 +14,19 @@
   <body>
     <main>
       <div class="l-settings">
-        <select class="c-select-clock" name="clock" id="select-clock">
+        <select class="c-select-clock" name="clock" id="select-clock" aria-label="select clock type">
           <option selected value="stopwatch">Stopwatch</option>
           <option value="timer">Timer</option>
           <option value="pomodoro">pomodoro</option>
         </select>
-        <div id="time" class="c-time-input">
+        <div id="time" class="c-time-input" aria-label="time">
           <input
             class="time"
             type="text"
             name="hours"
             id="hours"
             value="hh"
+            aria-valuetext="hours/horas"
           />:
           <input
             class="time"
@@ -33,6 +34,7 @@
             name="minutes"
             id="minutes"
             value="mm"
+            aria-valuetext="minutes/minutos"
           />:
           <input
             class="time"
@@ -40,6 +42,7 @@
             name="seconds"
             id="seconds"
             value="ss"
+            aria-valuetext="seconds/segundos"
           />
         </div>
         <div>
@@ -49,14 +52,29 @@
       </div>
 
       <div class="l-clock">
-        <div class="c-clock">
-          <div id="clock-hours"><span>0</span><span id="teste">0</span></div>
+        <div
+          class="c-clock"
+          id="clock"
+          role="timer"
+          aria-label="stopwatch"
+          aria-live="assertive"
+          aria-atomic="true"
+          tabindex="0"
+        >
+          <div id="clock-hours"><span>0</span><span>0</span></div>
           :
           <div id="clock-minutes"><span>0</span><span>0</span></div>
           :
           <div id="clock-seconds"><span>0</span><span>0</span></div>
         </div>
-        <div id="progress-bar" class="l-clock__progress-bar"></div>
+        <div
+          class="l-clock__progress-bar"
+          id="progress-bar"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+        ></div>
       </div>
     </main>
     <audio id="notify-audio" src="../assets/expect-good-news-380.mp3"></audio>
