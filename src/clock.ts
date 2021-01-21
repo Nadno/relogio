@@ -8,7 +8,7 @@ export interface Clock {
   tick?(): void;
 }
 
-export const clock: Clock = {
+export const clock = {
   setTickAction(callback) {
     this.tickAction = callback;
   },
@@ -20,8 +20,8 @@ export const clock: Clock = {
   start(from = "", to = "") {
     const oneSecond = 1000;
 
-    if (from && !this.from) this.from = readableTimeToSeconds(from);
-    if (to && !this.to) this.to = readableTimeToSeconds(to);
+    if (from) this.from = readableTimeToSeconds(from);
+    if (to) this.to = readableTimeToSeconds(to);
     
     if (this.startAction) this.startAction(this.from, this.to);
 
@@ -49,9 +49,11 @@ const clocker = {
   },
 }
 
-const createClock = () => ({
-  ...clock,
-  ...clocker,
-});
+const createClock = (): Clock => {
+  const newClock = Object.create(clock);
+  return Object.assign(newClock, {
+    ...clocker,
+  });
+};
 
 export default createClock;
