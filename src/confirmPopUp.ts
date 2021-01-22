@@ -1,27 +1,36 @@
 const track = document.querySelector("audio");
-
 interface ConfirmEvent {
   confirm: boolean | undefined;
   confirmAction: Function;
 }
 
-const confirmPopUp = (message?: string, confirmAction?: Function): void => {
+const POP_CONFIRM = "SIM";
+const POP_DECLINE = "NÃO";
+
+const confirmPopUp = (message?: { title: string, description: string }, confirmAction?: Function): void => {
   const popUp = document.createElement("div");
   const buttonsContainer = document.createElement("div");
   const confirmButton = document.createElement("button");
   const declineButton = document.createElement("button");
 
   popUp.classList.add("c-pop-up");
+  popUp.setAttribute("role", "alertdialog")
+  popUp.setAttribute("aria-labelledby", "pop-up-title")
+  popUp.setAttribute("aria-describedby", "pop-up-description")
+  popUp.setAttribute("tabindex", '0');
 
-  if (message) {
+  if (message.title && message.description) {
     popUp.insertAdjacentHTML(
       "afterbegin",
-      `<span class="c-pop-up__message">${message}</span>`
+      `
+      <span id="pop-up-title">${message.title}</span>
+      <span class="c-pop-up__message" id="pop-up-description">${message.description}</span>
+      `
     );
   }
 
-  confirmButton.innerText = "YES";
-  declineButton.innerText = "NO";
+  confirmButton.innerText = POP_CONFIRM;
+  declineButton.innerText = POP_DECLINE;
 
   confirmButton.classList.add("c-button", "c-button--confirm");
   declineButton.classList.add("c-button", "c-button--reject");
@@ -55,6 +64,7 @@ const confirmPopUp = (message?: string, confirmAction?: Function): void => {
     confirmButton.removeEventListener("click", confirm);
     declineButton.removeEventListener("click", decline);
     popUp.remove();
+    document.querySelector<HTMLSelectElement>("#start").focus();
   }
 
   function decline() {
@@ -62,6 +72,7 @@ const confirmPopUp = (message?: string, confirmAction?: Function): void => {
     confirmButton.removeEventListener("click", confirm);
     declineButton.removeEventListener("click", decline);
     popUp.remove();
+    document.querySelector<HTMLButtonElement>("#start").focus();
   }
 
   confirmButton.addEventListener("click", confirm);
@@ -70,6 +81,7 @@ const confirmPopUp = (message?: string, confirmAction?: Function): void => {
   document.body.insertAdjacentElement("beforeend", popUp);
 
   track.play();
+  popUp.focus();
 };
 
 export default confirmPopUp;

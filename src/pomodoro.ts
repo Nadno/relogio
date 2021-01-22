@@ -6,7 +6,7 @@ interface PomodoroClock extends Clock {
   pomodoroState: "pomodoro" | "pause";
   from?: number;
   to?: number;
-  setConfirmEvent(startConfirmEvent: (message?: string) => void): void;
+  setConfirmEvent(startConfirmEvent: (message?: { title: string, description: string; }) => void): void;
   resetClock(): void;
   restart(): void;
   pause(): void;
@@ -48,7 +48,10 @@ const pomodoroClocker = {
     };
 
     this.startConfirmEvent(
-      "Pomodoro complete, do you wanna start a pause?",
+      {
+        title: "Pomodoro completo",
+        description: "Você quer iniciar uma pausa?",
+      },
       confirmAction
     );
   },
@@ -68,7 +71,10 @@ const pomodoroClocker = {
     };
 
     this.startConfirmEvent(
-      "Pomodoro time, do you wanna start it?",
+      {
+        title: "Pause completo",
+        description: "Você quer iniciar um novo pomodoro?",
+      },
       confirmAction
     );
   },

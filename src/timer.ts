@@ -2,12 +2,14 @@ import { Clock, clock } from "./clock";
 
 const timerClocker = {
   tick() {
-    const progressiveFrom = this.to + this.from;
-    const regressiveTo = -this.to;
+    const regressiveFrom = this.to + this.from;
+    const progressiveFrom = this.from * -1 || 0;
+    const negatedTo = -this.to;
     this.from--;
+
     
-    if (this.tickAction) this.tickAction(progressiveFrom, this.to); 
-    if (this.from < regressiveTo) this.stop();
+    if (this.tickAction) this.tickAction(regressiveFrom, this.to, progressiveFrom); 
+    if (this.from < negatedTo) this.stop();
   },
 };
 
