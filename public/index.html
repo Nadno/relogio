@@ -13,20 +13,20 @@
   </head>
   <body>
     <main>
-      <div class="l-settings">
-        <select class="c-select-clock" name="clock" id="select-clock" aria-label="select clock type">
-          <option selected value="stopwatch">Stopwatch</option>
-          <option value="timer">Timer</option>
-          <option value="pomodoro">pomodoro</option>
+      <div class="l-settings" aria-label="Configurações do relógio">
+        <select class="c-select-clock" name="clock" id="select-clock" aria-label="Selecione o tipo de relógio">
+          <option selected value="stopwatch">Cronômetro</option>
+          <option value="timer">Cronômetro regressivo</option>
+          <option value="pomodoro">Pomodoro</option>
         </select>
-        <div id="time" class="c-time-input" aria-label="time">
+        <div id="time" class="c-time-input" aria-label="Insira as unidades de tempo">
           <input
             class="time"
             type="text"
             name="hours"
             id="hours"
             value="hh"
-            aria-valuetext="hours/horas"
+            aria-label="Digite as horas, caso não alterado será considerado como 0"
           />:
           <input
             class="time"
@@ -34,7 +34,7 @@
             name="minutes"
             id="minutes"
             value="mm"
-            aria-valuetext="minutes/minutos"
+            aria-label="Digite os minutos, caso não alterado será considerado como 0"
           />:
           <input
             class="time"
@@ -42,30 +42,30 @@
             name="seconds"
             id="seconds"
             value="ss"
-            aria-valuetext="seconds/segundos"
+            aria-label="Digite os segundos, caso não alterado será considerado como 0"
           />
+
         </div>
+        
         <div>
-          <button class="c-button" id="start">START</button>
-          <button class="c-button c-button--stop" id="stop">STOP</button>
+          <button class="c-button" id="start" aria-label="Inicie o relógio">INICIAR</button>
+          <button class="c-button c-button--stop" id="stop" aria-label="Pare o relógio">PARAR</button>
         </div>
       </div>
 
+      <span id="alerts"></span>
+  
       <div class="l-clock">
         <div
           class="c-clock"
           id="clock"
-          role="timer"
-          aria-label="stopwatch"
-          aria-live="assertive"
-          aria-atomic="true"
-          tabindex="0"
+          aria-label="relógio"
         >
           <div id="clock-hours"><span>0</span><span>0</span></div>
           :
           <div id="clock-minutes"><span>0</span><span>0</span></div>
           :
-          <div id="clock-seconds"><span>0</span><span>0</span></div>
+          <div id="clock-seconds" ><span>0</span><span>0</span></div>
         </div>
         <div
           class="l-clock__progress-bar"
@@ -74,6 +74,7 @@
           aria-valuemin="0"
           aria-valuemax="100"
           aria-valuenow="0"
+          tabindex="0"
         ></div>
       </div>
     </main>

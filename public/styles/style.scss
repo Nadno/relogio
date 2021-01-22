@@ -32,6 +32,13 @@ main {
   justify-content: space-evenly;
 }
 
+#alerts {
+  height: 5rem;
+  font-size: 1.4rem;
+  color: royalblue;
+}
+
+
 @import "./components/c-time-input";
 @import "./components/c-button";
 @import "./components/c-clock";
