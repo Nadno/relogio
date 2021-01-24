@@ -1,4 +1,4 @@
-import { clock } from "../clock";
+import { starter, ticker, stopper } from "../clock";
 import { formatTimeUnit } from "../utils/formatTime";
 
 interface FunctionAction {
@@ -20,10 +20,15 @@ export interface IClock {
 function Clock() {
   this.tickAction = undefined;
   this.startAction = undefined;
-  this.stopAction  = undefined;
+  this.stopAction = undefined;
 }
 
-Clock.prototype = Object.create(clock as IClock);
+Clock.prototype = Object.create({
+  ...starter,
+  ...ticker,
+  ...stopper,
+}) as IClock;
+
 Clock.prototype.tick = function tick() {
   const date = new Date();
   const UTCTime = [date.getHours(), date.getMinutes(), date.getSeconds()];
