@@ -6,7 +6,11 @@ A aplicação possui três funcionalidades, a de pomodoro, timer e stopwatch.
 
 # Objetivo
 
-A aplicação foi feita com o intuito de colocar em prática as diversas formas de se aplicar a *herança prototípica* do Javascript, o uso de *funções construtoras* e outras funcionalidade que implicam o uso de **this**. 
+A aplicação foi feita com o intuito de colocar em prática as diversas formas de se aplicar a *herança prototípica* do Javascript, o uso de *funções construtoras* e outras funcionalidade que implicam o uso de **this**.
+
+## Atributos aria
+
+A aplicação possui uma pequena melhoria para *acessibilidade* com o uso dos atributos **aria**. Como por exemplo, as roles **alert** e **progress-bar**, que mantêm uma atualização *auditiva* e *visual* do progresso do relógio em execução.
 
 ## Object.create(..)
 
