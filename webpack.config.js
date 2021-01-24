@@ -14,7 +14,7 @@ module.exports = {
     host: "192.168.1.3",
   },
   devtool: "source-map",
-  mode: "development",
+  mode: "production",
   
   resolve: {
     extensions: [".webpack.js", ".web.js", ".ts", ".js"],
@@ -34,7 +34,7 @@ module.exports = {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        loader: "ts-loader",
+        loader: "babel-loader",
       },
     ],
   },
