@@ -1,6 +1,6 @@
-import createStopwatch from "./stopwatch";
-import createTimer from "./timer";
-import createPomodoro from "./pomodoro";
+import createStopwatch from "./createStopwatch";
+import createTimer from "./createTimer";
+import createPomodoro from "./createPomodoro";
 
 import confirmPopUp from "./confirmPopUp";
 import ptBrClocks from "./utils/ptBrClocks";
@@ -112,7 +112,7 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
   const startEvent = () => {
     if (inProgress) return;
     const time = clockType === "pomodoro" ? "" : getTime();
-    clock.start("00:00:55", time);
+    clock.start("00:00:00", time);
   };
 
   const stopEvent = () => {

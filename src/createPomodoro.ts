@@ -1,4 +1,5 @@
-import { Clock, clock } from "./clock";
+import { ticker, stopper } from "./clock";
+import { Clock } from "./createClock";
 
 import { minutesToSeconds } from "./utils/formatTime";
 
@@ -31,6 +32,19 @@ const pomodoroClocker = {
 
   setConfirmEvent(startConfirmEvent) {
     this.startConfirmEvent = startConfirmEvent;
+  },
+
+  setStartAction(callback) {
+    this.startAction = callback;
+  },
+
+  start() {
+    const oneSecond = 1000;
+    if (this.startAction) this.startAction(this.from, this.to);
+
+    this.tickID = setInterval(() => {
+      this.tick();
+    }, oneSecond);
   },
 
   pause() {
@@ -78,16 +92,17 @@ const pomodoroClocker = {
       confirmAction
     );
   },
+
+  ...ticker,
+  ...stopper,
 };
 
 const createPomodoro = (): PomodoroClock => {
-  const newPomodoro = Object.create(clock);
+  const newPomodoro = Object.create(pomodoroClocker);
   return Object.assign(newPomodoro, {
     pomodoroState: "pomodoro",
     from: 0,
     to: minutesToSeconds(25),
-
-    ...pomodoroClocker,
   });
 };
 
