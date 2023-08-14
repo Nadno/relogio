@@ -9,10 +9,6 @@ module.exports = {
     filename: "bundle.js",
     path: path.resolve(__dirname, "dist"),
   },
-
-  devServer: {
-    host: "192.168.1.3",
-  },
   devtool: "source-map",
   mode: "production",
   

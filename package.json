@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "types": "main.d.ts",
+  "node-version": "14.18.1",
   "scripts": {
     "dev": "webpack serve",
     "build": "webpack"
