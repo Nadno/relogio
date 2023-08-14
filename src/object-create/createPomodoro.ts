@@ -1,7 +1,7 @@
 import { ticker, stopper } from "./clock";
 import { Clock } from "./createClock";
 
-import { minutesToSeconds } from "./utils/formatTime";
+import { minutesToSeconds } from "../utils/formatTime";
 
 interface PomodoroClock extends Clock {
   pomodoroState: "pomodoro" | "pause";

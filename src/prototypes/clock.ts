@@ -1,4 +1,4 @@
-import { starter, ticker, stopper } from "../clock";
+import { starter, ticker, stopper } from "../object-create/clock";
 import { formatTimeUnit } from "../utils/formatTime";
 
 interface FunctionAction {

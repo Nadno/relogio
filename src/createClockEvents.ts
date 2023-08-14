@@ -1,35 +1,37 @@
-import createStopwatch from "./createStopwatch";
-import createTimer from "./createTimer";
-import createPomodoro from "./createPomodoro";
+import {
+  createStopwatch,
+  createTimer,
+  createPomodoro,
+} from './object-create/index';
 
-import confirmPopUp from "./confirmPopUp";
-import ptBrClocks from "./utils/ptBrClocks";
-import { alertOnAlertSpan } from "./utils/accessibilityAlert";
-import createClockRender, { UnitTimeElement } from "./clockRender";
+import confirmPopUp from './confirmPopUp';
+import ptBrClocks from './utils/ptBrClocks';
+import { alertOnAlertSpan } from './utils/accessibilityAlert';
+import createClockRender, { UnitTimeElement } from './clockRender';
 
 const getElementClockUnit = (id: string) =>
-  (Array.from(document.getElementById(id).querySelectorAll("span")).slice(
+  Array.from(document.getElementById(id).querySelectorAll('span')).slice(
     -2
-  ) as unknown) as UnitTimeElement;
+  ) as unknown as UnitTimeElement;
 
 const render = createClockRender(
   {
-    hours: getElementClockUnit("clock-hours"),
-    minutes: getElementClockUnit("clock-minutes"),
-    seconds: getElementClockUnit("clock-seconds"),
+    hours: getElementClockUnit('clock-hours'),
+    minutes: getElementClockUnit('clock-minutes'),
+    seconds: getElementClockUnit('clock-seconds'),
   },
-  document.getElementById("progress-bar")
+  document.getElementById('progress-bar')
 );
 
-export type ClockType = "stopwatch" | "timer" | "pomodoro";
+export type ClockType = 'stopwatch' | 'timer' | 'pomodoro';
 
 const selectClock = (clockType: ClockType, getTime: () => string) => {
-  const element = document.querySelector(".c-clock");
+  const element = document.querySelector('.c-clock');
   let inProgress = false;
 
   const defaultClockStartAction = () => {
     render.resetClock();
-    element.classList.add("c-clock--active");
+    element.classList.add('c-clock--active');
     alertOnAlertSpan(`${ptBrClocks[clockType]} iniciado`);
 
     inProgress = true;
@@ -42,9 +44,10 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
   ) => {
     render.setClock(currentTime, time);
 
-    const percentage = progressiveTimer >= 0
-      ? (progressiveTimer * 100) / time
-      : (currentTime * 100) / time;
+    const percentage =
+      progressiveTimer >= 0
+        ? (progressiveTimer * 100) / time
+        : (currentTime * 100) / time;
 
     if (percentage >= 50 && percentage < 51) {
       alertOnAlertSpan(`${ptBrClocks[clockType]} 50% completo`);
@@ -54,8 +57,8 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
   };
 
   const defaultClockStopAction = () => {
-    element.classList.remove("c-clock--active");
-    if (clockType !== "pomodoro") 
+    element.classList.remove('c-clock--active');
+    if (clockType !== 'pomodoro')
       alertOnAlertSpan(`${ptBrClocks[clockType]}, finalizado`);
     inProgress = false;
   };
@@ -94,7 +97,7 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
     pomodoro() {
       const clock = createPomodoro();
 
-      clock.setStartAction((from) => {
+      clock.setStartAction(from => {
         defaultClockStartAction();
         render.setClock(from);
       });
@@ -111,8 +114,8 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
 
   const startEvent = () => {
     if (inProgress) return;
-    const time = clockType === "pomodoro" ? "" : getTime();
-    clock.start("00:00:00", time);
+    const time = clockType === 'pomodoro' ? '' : getTime();
+    clock.start('00:00:00', time);
   };
 
   const stopEvent = () => {

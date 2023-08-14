@@ -1,4 +1,4 @@
-import { readableTimeToSeconds } from "./utils/formatTime";
+import { readableTimeToSeconds } from "../utils/formatTime";
 
 export const ticker = {
   setTickAction(callback) {
