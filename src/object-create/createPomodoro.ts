@@ -1,32 +1,69 @@
-import { ticker, stopper } from "./clock";
-import { Clock } from "./createClock";
+import { stopper, observer, Clock, Emitters, Observables } from './clock';
 
-import { minutesToSeconds } from "../utils/formatTime";
+import { minutesToSeconds } from '../utils/formatTime';
 
-interface PomodoroClock extends Clock {
-  pomodoroState: "pomodoro" | "pause";
+export type PomodoroSubject = {
+  from: number;
+  to: number;
+  current: number;
+};
+
+export type PomodoroTimeHandler = (time: PomodoroSubject) => void;
+
+export interface PomodoroEmitters {
+  (type: 'tick', time: PomodoroSubject): void;
+  (type: 'stop', data: PomodoroSubject): void;
+  (type: 'start', data: PomodoroSubject): void;
+}
+
+export interface PomodoroObservables {
+  (type: 'stop', handler: PomodoroTimeHandler): void;
+  (type: 'start', handler: PomodoroTimeHandler): void;
+  (type: 'tick', handler: PomodoroTimeHandler): void;
+}
+
+export interface PomodoroClock extends Clock<PomodoroEmitters, PomodoroObservables> {
+  pomodoroState: 'pomodoro' | 'pause';
   from?: number;
   to?: number;
-  setConfirmEvent(startConfirmEvent: (message?: { title: string, description: string; }) => void): void;
+  setConfirmEvent(
+    startConfirmEvent: (message?: {
+      title: string;
+      description: string;
+    }) => void
+  ): void;
   resetClock(): void;
   restart(): void;
   pause(): void;
+  start(): void;
   tick(): void;
 }
 
-const pomodoroClocker = {
+const pomodoroClocker: PomodoroClock = {
+  ...observer,
+  ...stopper,
+
+  pomodoroState: 'pomodoro',
+
   resetClock() {
-    this.pomodoroState = "pomodoro";
-    this.from = 0;
+    this.pomodoroState = 'pomodoro';
+    this.current = this.from;
     this.to = minutesToSeconds(25);
   },
 
   tick() {
-    this.from++;
+    this.current++;
 
-    if (this.tickAction && this.from > 0) this.tickAction(this.from, this.to);
-    if (this.from >= this.to) {
-      this.pomodoroState === "pomodoro" ? this.pause() : this.restart();
+    if (this.current > 0) {
+      this._emit('tick', {
+        from: this.from,
+        to: this.to,
+        current: this.current,
+      });
+    }
+
+    if (this.current >= this.to) {
+      this.pomodoroState === 'pomodoro' ? this.pause() : this.restart();
     }
   },
 
@@ -34,17 +71,16 @@ const pomodoroClocker = {
     this.startConfirmEvent = startConfirmEvent;
   },
 
-  setStartAction(callback) {
-    this.startAction = callback;
-  },
-
   start() {
     const oneSecond = 1000;
-    if (this.startAction) this.startAction(this.from, this.to);
 
-    this.tickID = setInterval(() => {
-      this.tick();
-    }, oneSecond);
+    this._emit('start', {
+      from: this.from,
+      to: this.to,
+      current: this.current,
+    });
+
+    this.tickID = setInterval(() => this.tick(), oneSecond);
   },
 
   pause() {
@@ -54,7 +90,7 @@ const pomodoroClocker = {
     const confirmAction = (confirm: boolean) => {
       if (confirm) {
         this.start();
-        this.pomodoroState = "pause";
+        this.pomodoroState = 'pause';
         return;
       }
 
@@ -63,8 +99,8 @@ const pomodoroClocker = {
 
     this.startConfirmEvent(
       {
-        title: "Pomodoro completo",
-        description: "Você quer iniciar uma pausa?",
+        title: 'Pomodoro completo',
+        description: 'Você quer iniciar uma pausa?',
       },
       confirmAction
     );
@@ -77,7 +113,7 @@ const pomodoroClocker = {
     const confirmAction = (confirm: boolean) => {
       if (confirm) {
         this.start();
-        this.pomodoroState = "pomodoro";
+        this.pomodoroState = 'pomodoro';
         return;
       }
 
@@ -86,22 +122,22 @@ const pomodoroClocker = {
 
     this.startConfirmEvent(
       {
-        title: "Pause completo",
-        description: "Você quer iniciar um novo pomodoro?",
+        title: 'Pause completo',
+        description: 'Você quer iniciar um novo pomodoro?',
       },
       confirmAction
     );
   },
-
-  ...ticker,
-  ...stopper,
 };
 
-const createPomodoro = (): PomodoroClock => {
+const createPomodoro = <
+  TClock extends Clock<Emitters, Observables> = Clock<Emitters, Observables>
+>(): TClock => {
   const newPomodoro = Object.create(pomodoroClocker);
   return Object.assign(newPomodoro, {
-    pomodoroState: "pomodoro",
+    pomodoroState: 'pomodoro',
     from: 0,
+    current: 0,
     to: minutesToSeconds(25),
   });
 };

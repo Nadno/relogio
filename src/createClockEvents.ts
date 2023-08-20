@@ -2,6 +2,7 @@ import {
   createStopwatch,
   createTimer,
   createPomodoro,
+  PomodoroClock,
 } from './object-create/index';
 
 import confirmPopUp from './confirmPopUp';
@@ -37,17 +38,20 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
     inProgress = true;
   };
 
-  const defaultTickAction = (
-    currentTime: number,
-    time?: number,
-    progressiveTimer?: number
-  ) => {
-    render.setClock(currentTime, time);
+  const defaultTickAction = ({ current, from, to }) => {
+    render.setClock(current, to);
 
-    const percentage =
-      progressiveTimer >= 0
-        ? (progressiveTimer * 100) / time
-        : (currentTime * 100) / time;
+    const progressive = {
+      /**
+       * The timer clock, expects that `from` is higher then `to`,
+       * so we need to handle the data to calculate the percentage.
+       */
+      from: Math.min(from, to),
+      to: Math.max(from, to),
+      current: from > to ? from - current : current,
+    };
+
+    const percentage = (progressive.current * 100) / progressive.to;
 
     if (percentage >= 50 && percentage < 51) {
       alertOnAlertSpan(`${ptBrClocks[clockType]} 50% completo`);
@@ -67,63 +71,71 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
     stopwatch() {
       const clock = createStopwatch();
 
-      const startAction = (from, to) => {
+      const startAction = ({ from, to }) => {
         defaultClockStartAction();
         render.setClock(from, to);
       };
 
-      clock.setStartAction(startAction);
-      clock.setTickAction(defaultTickAction);
-      clock.setStopAction(defaultClockStopAction);
+      clock.on('start', startAction);
+      clock.on('tick', defaultTickAction);
+      clock.on('stop', defaultClockStopAction);
 
-      return clock;
+      const start = () => clock.start('00:00:00', getTime()),
+        stop = () => clock.stop();
+
+      return [start, stop];
     },
 
     timer() {
       const clock = createTimer();
 
-      const startAction = (_, to) => {
+      const startAction = ({ from }) => {
         defaultClockStartAction();
-        render.setClock(to, to);
+        render.setClock(from, from);
       };
 
-      clock.setStartAction(startAction);
-      clock.setTickAction(defaultTickAction);
-      clock.setStopAction(defaultClockStopAction);
+      clock.on('start', startAction);
+      clock.on('tick', defaultTickAction);
+      clock.on('stop', defaultClockStopAction);
 
-      return clock;
+      const start = () => clock.start(getTime(), '00:00:00'),
+        stop = () => clock.stop();
+
+      return [start, stop];
     },
 
     pomodoro() {
-      const clock = createPomodoro();
+      const clock = createPomodoro<PomodoroClock>();
 
-      clock.setStartAction(from => {
+      clock.on('start', ({ from }) => {
         defaultClockStartAction();
         render.setClock(from);
       });
-      clock.setTickAction(defaultTickAction);
+
+      clock.on('tick', defaultTickAction);
       clock.setConfirmEvent(confirmPopUp);
+      clock.on('stop', defaultClockStopAction);
 
-      clock.setStopAction(defaultClockStopAction);
+      const start = () => clock.start(),
+        stop = () => clock.stop();
 
-      return clock;
+      return [start, stop];
     },
   };
 
-  const clock = clocks[clockType]();
+  const [start, stop] = clocks[clockType]();
 
-  const startEvent = () => {
+  const startClock = () => {
     if (inProgress) return;
-    const time = clockType === 'pomodoro' ? '' : getTime();
-    clock.start('00:00:00', time);
+    start();
   };
 
-  const stopEvent = () => {
+  const stopClock = () => {
     if (!inProgress) return;
-    clock.stop();
+    stop();
   };
 
-  return [startEvent, stopEvent];
+  return [startClock, stopClock];
 };
 
 export default selectClock;

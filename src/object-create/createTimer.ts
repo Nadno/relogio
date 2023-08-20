@@ -1,22 +1,47 @@
-import { starter, ticker, stopper } from "./clock";
-import { Clock } from "./createClock";
+import { starter, stopper, observer, Emitters, Observables, Clock } from './clock';
 
-const timerClocker = {
-  tick() {
-    const regressiveFrom = this.to + this.from;
-    const progressiveFrom = this.from * -1 || 0;
-    const negatedTo = -this.to;
-    this.from--;
-
-    if (this.tickAction)
-      this.tickAction(regressiveFrom, this.to, progressiveFrom);
-    if (this.from < negatedTo) this.stop();
-  },
-  ...starter,
-  ...ticker,
-  ...stopper,
+export type TimerSubject = {
+  from: number;
+  to: number;
+  current: number;
 };
 
-const createTimer = (): Clock => Object.create(timerClocker);
+export type TimerTimeHandler = (time: TimerSubject) => void;
+
+export interface TimerEmitters {
+  (type: 'tick', time: TimerSubject): void;
+  (type: 'stop', data: TimerSubject): void;
+  (type: 'start', data: TimerSubject): void;
+}
+
+export interface TimerObservables {
+  (type: 'stop', handler: TimerTimeHandler): void;
+  (type: 'start', handler: TimerTimeHandler): void;
+  (type: 'tick', handler: TimerTimeHandler): void;
+}
+
+export interface TimerClock extends Clock<TimerEmitters, TimerObservables> {}
+
+const timerClocker = {
+  ...observer,
+  ...starter,
+  ...stopper,
+
+  tick() {
+    this.current--;
+
+    this._emit('tick', {
+      from: this.from,
+      to: this.to,
+      current: this.current,
+    });
+
+    if (this.current === this.to) this.stop();
+  },
+};
+
+const createTimer = <
+  TClock extends Clock<Emitters, Observables> = Clock<Emitters, Observables>
+>(): TClock => Object.create(timerClocker);
 
 export default createTimer;

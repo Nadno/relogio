@@ -1,17 +1,50 @@
-import { starter, ticker, stopper } from "./clock";
-import Clock from "./classes/clock";
+import { starter, stopper, Clock, Emitters, Observables, observer } from './clock';
 
-const stopwatchClocker = {
-  tick() {
-    this.from++;
-    if (this.tickAction && this.from > 0) this.tickAction(this.from, this.to);
-    if (this.from >= this.to) this.stop();
-  },
-  ...starter,
-  ...ticker,
-  ...stopper,
+export type StopwatchSubject = {
+  from: number;
+  to: number;
+  current: number;
 };
 
-const createStopwatch = (): Clock => Object.create(stopwatchClocker);
+export interface StopwatchEmitters {
+  (type: 'tick', time: StopwatchSubject): void;
+  (type: 'stop', data: StopwatchSubject): void;
+  (type: 'start', data: StopwatchSubject): void;
+}
+
+export type StopwatchTimeHandler = (time: StopwatchSubject) => void;
+
+export interface StopwatchObservables {
+  (type: 'stop', handler: StopwatchTimeHandler): void;
+  (type: 'start', handler: StopwatchTimeHandler): void;
+  (type: 'tick', handler: StopwatchTimeHandler): void;
+}
+
+export interface StopwatchClock
+  extends Clock<StopwatchEmitters, StopwatchObservables> {}
+
+const stopwatchClocker = {
+  ...observer,
+  ...starter,
+  ...stopper,
+
+  tick() {
+    this.current++;
+
+    if (this.current > 0) {
+      this._emit('tick', {
+        from: this.from,
+        to: this.to,
+        current: this.current,
+      });
+    }
+
+    if (this.current >= this.to) this.stop();
+  },
+};
+
+const createStopwatch = <
+  TClock extends Clock<Emitters, Observables> = Clock<Emitters, Observables>
+>(): TClock => Object.create(stopwatchClocker);
 
 export default createStopwatch;

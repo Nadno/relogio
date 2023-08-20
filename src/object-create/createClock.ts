@@ -1,29 +1,32 @@
-import { starter, ticker, stopper } from "./clock";
-import { formatTimeUnit } from "./utils/formatTime";
+import {
+  starter,
+  stopper,
+  observer,
+  Clock,
+  ClockEmitters,
+  ClockObservables,
+} from './clock';
 
-export interface Clock {
-  setTickAction(
-    action: (UTCCurrentTime: number, UTCTime: number) => void
-  ): void;
-  setStartAction(action: (from: number, to: number) => void): void;
-  setStopAction(action: () => void): void;
-  start(from?: string, to?: string): void;
-  stop(): void;
-  tick?(): void;
-}
-
-const clocker = {
-  tick() {
-    const date = new Date();
-    const UTCTime = [date.getHours(), date.getMinutes(), date.getSeconds()];
-    if (this.tickAction)
-      this.tickAction(UTCTime.map((value) => formatTimeUnit(value)).join(":"));
-  },
+const clocker: Clock<ClockEmitters, ClockObservables> = {
+  ...observer,
   ...starter,
-  ...ticker,
   ...stopper,
+
+  start() {
+    this.current = Date.now() * 1000;
+    starter.start.call(this);
+  },
+
+  tick() {
+    this._emit('tick', {
+      from: this.from || 0,
+      to: this.to || 0,
+      current: this.current,
+    });
+  },
 };
 
-const createClock = (): Clock => Object.create(clocker);
+const createClock = (): Clock<ClockEmitters, ClockObservables> =>
+  Object.create(clocker);
 
 export default createClock;
