@@ -9,6 +9,7 @@ import confirmPopUp from './confirmPopUp';
 import ptBrClocks from './utils/ptBrClocks';
 import { alertOnAlertSpan } from './utils/accessibilityAlert';
 import createClockRender, { UnitTimeElement } from './clockRender';
+import { ClockTimeHandler } from './object-create/clock';
 
 const getElementClockUnit = (id: string) =>
   Array.from(document.getElementById(id).querySelectorAll('span')).slice(
@@ -30,16 +31,20 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
   const element = document.querySelector('.c-clock');
   let inProgress = false;
 
-  const defaultClockStartAction = () => {
+  const defaultClockStartAction: ClockTimeHandler = ({ from, to }) => {
     render.resetClock();
-    element.classList.add('c-clock--active');
-    alertOnAlertSpan(`${ptBrClocks[clockType]} iniciado`);
+
+    requestAnimationFrame(() => {
+      render.setClock(from);
+      element.classList.add('c-clock--active');
+      alertOnAlertSpan(`${ptBrClocks[clockType]} iniciado`);
+    });
 
     inProgress = true;
   };
 
-  const defaultTickAction = ({ current, from, to }) => {
-    render.setClock(current, to);
+  const defaultTickAction: ClockTimeHandler = ({ current, from, to }) => {
+    render.setClock(current);
 
     const progressive = {
       /**
@@ -60,25 +65,30 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
     render.setProgressBar(percentage);
   };
 
-  const defaultClockStopAction = () => {
+  const defaultClockStopAction: ClockTimeHandler = () => {
     element.classList.remove('c-clock--active');
     if (clockType !== 'pomodoro')
       alertOnAlertSpan(`${ptBrClocks[clockType]}, finalizado`);
     inProgress = false;
   };
 
+  const createClock = (type: 'timer' | 'stopwatch' | 'pomodoro') => {
+    const clock = {
+      timer: createTimer,
+      stopwatch: createStopwatch,
+      pomodoro: createPomodoro,
+    }[type]();
+
+    clock.on('start', defaultClockStartAction);
+    clock.on('tick', defaultTickAction);
+    clock.on('stop', defaultClockStopAction);
+
+    return clock;
+  };
+
   const clocks = {
     stopwatch() {
-      const clock = createStopwatch();
-
-      const startAction = ({ from, to }) => {
-        defaultClockStartAction();
-        render.setClock(from, to);
-      };
-
-      clock.on('start', startAction);
-      clock.on('tick', defaultTickAction);
-      clock.on('stop', defaultClockStopAction);
+      const clock = createClock('stopwatch');
 
       const start = () => clock.start('00:00:00', getTime()),
         stop = () => clock.stop();
@@ -87,16 +97,7 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
     },
 
     timer() {
-      const clock = createTimer();
-
-      const startAction = ({ from }) => {
-        defaultClockStartAction();
-        render.setClock(from, from);
-      };
-
-      clock.on('start', startAction);
-      clock.on('tick', defaultTickAction);
-      clock.on('stop', defaultClockStopAction);
+      const clock = createClock('timer');
 
       const start = () => clock.start(getTime(), '00:00:00'),
         stop = () => clock.stop();
@@ -105,16 +106,37 @@ const selectClock = (clockType: ClockType, getTime: () => string) => {
     },
 
     pomodoro() {
-      const clock = createPomodoro<PomodoroClock>();
+      const clock = createClock('pomodoro') as PomodoroClock;
 
-      clock.on('start', ({ from }) => {
-        defaultClockStartAction();
-        render.setClock(from);
+      clock.on('pause', () => {
+        const confirmAction = (confirm: boolean) => {
+          if (!confirm) return;
+          clock.start();
+        };
+
+        confirmPopUp(
+          {
+            title: 'Pomodoro completo',
+            description: 'Você quer iniciar uma pausa?',
+          },
+          confirmAction
+        );
       });
 
-      clock.on('tick', defaultTickAction);
-      clock.setConfirmEvent(confirmPopUp);
-      clock.on('stop', defaultClockStopAction);
+      clock.on('focus', () => {
+        const confirmAction = (confirm: boolean) => {
+          if (!confirm) return;
+          clock.start();
+        };
+
+        confirmPopUp(
+          {
+            title: 'Pausa completa',
+            description: 'Você quer iniciar um novo pomodoro?',
+          },
+          confirmAction
+        );
+      });
 
       const start = () => clock.start(),
         stop = () => clock.stop();

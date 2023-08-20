@@ -14,27 +14,27 @@ export interface PomodoroEmitters {
   (type: 'tick', time: PomodoroSubject): void;
   (type: 'stop', data: PomodoroSubject): void;
   (type: 'start', data: PomodoroSubject): void;
+  (type: 'focus', data?: null): void;
+  (type: 'pause', data?: null): void;
 }
 
 export interface PomodoroObservables {
   (type: 'stop', handler: PomodoroTimeHandler): void;
   (type: 'start', handler: PomodoroTimeHandler): void;
   (type: 'tick', handler: PomodoroTimeHandler): void;
+  (type: 'focus', handler: Function): void;
+  (type: 'pause', handler: Function): void;
 }
 
-export interface PomodoroClock extends Clock<PomodoroEmitters, PomodoroObservables> {
-  pomodoroState: 'pomodoro' | 'pause';
+export interface PomodoroClock
+  extends Clock<PomodoroEmitters, PomodoroObservables> {
+  pomodoroState: 'focus' | 'pause';
   from?: number;
   to?: number;
-  setConfirmEvent(
-    startConfirmEvent: (message?: {
-      title: string;
-      description: string;
-    }) => void
-  ): void;
+
   resetClock(): void;
-  restart(): void;
-  pause(): void;
+  focusMode(): void;
+  pauseMode(): void;
   start(): void;
   tick(): void;
 }
@@ -43,12 +43,11 @@ const pomodoroClocker: PomodoroClock = {
   ...observer,
   ...stopper,
 
-  pomodoroState: 'pomodoro',
+  pomodoroState: 'focus',
 
   resetClock() {
-    this.pomodoroState = 'pomodoro';
     this.current = this.from;
-    this.to = minutesToSeconds(25);
+    this.to = minutesToSeconds(this.pomodoroState === 'focus' ? 25 : 5);
   },
 
   tick() {
@@ -63,12 +62,9 @@ const pomodoroClocker: PomodoroClock = {
     }
 
     if (this.current >= this.to) {
-      this.pomodoroState === 'pomodoro' ? this.pause() : this.restart();
+      this.stop();
+      this.pomodoroState === 'focus' ? this.pauseMode() : this.focusMode();
     }
-  },
-
-  setConfirmEvent(startConfirmEvent) {
-    this.startConfirmEvent = startConfirmEvent;
   },
 
   start() {
@@ -83,50 +79,16 @@ const pomodoroClocker: PomodoroClock = {
     this.tickID = setInterval(() => this.tick(), oneSecond);
   },
 
-  pause() {
-    this.to = minutesToSeconds(5);
-    this.stop();
-
-    const confirmAction = (confirm: boolean) => {
-      if (confirm) {
-        this.start();
-        this.pomodoroState = 'pause';
-        return;
-      }
-
-      this.resetClock();
-    };
-
-    this.startConfirmEvent(
-      {
-        title: 'Pomodoro completo',
-        description: 'Você quer iniciar uma pausa?',
-      },
-      confirmAction
-    );
+  pauseMode() {
+    this.pomodoroState = 'pause';
+    this.resetClock();
+    this._emit('pause');
   },
 
-  restart() {
-    this.to = minutesToSeconds(25);
-    this.stop();
-
-    const confirmAction = (confirm: boolean) => {
-      if (confirm) {
-        this.start();
-        this.pomodoroState = 'pomodoro';
-        return;
-      }
-
-      this.resetClock();
-    };
-
-    this.startConfirmEvent(
-      {
-        title: 'Pause completo',
-        description: 'Você quer iniciar um novo pomodoro?',
-      },
-      confirmAction
-    );
+  focusMode() {
+    this.pomodoroState = 'focus';
+    this.resetClock();
+    this._emit('focus');
   },
 };
 
@@ -135,7 +97,7 @@ const createPomodoro = <
 >(): TClock => {
   const newPomodoro = Object.create(pomodoroClocker);
   return Object.assign(newPomodoro, {
-    pomodoroState: 'pomodoro',
+    pomodoroState: 'focus',
     from: 0,
     current: 0,
     to: minutesToSeconds(25),

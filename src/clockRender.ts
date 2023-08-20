@@ -1,6 +1,10 @@
-import { alertOnAlertSpan } from "./utils/accessibilityAlert";
-import startAnimate from "./utils/animate";
-import { formatTimeUnit, secondsToMinutes, secondsToReadableTime } from "./utils/formatTime";
+import { alertOnAlertSpan } from './utils/accessibilityAlert';
+import startAnimate from './utils/animate';
+import {
+  formatTimeUnit,
+  secondsToMinutes,
+  secondsToReadableTime,
+} from './utils/formatTime';
 
 export type UnitTimeElement = readonly [HTMLElement, HTMLElement];
 
@@ -12,12 +16,12 @@ const createClockRender = (
   },
   progressBarElement?: HTMLElement
 ) => {
-  const hours: string[] = ["0", "0"],
-    minutes: string[] = ["0", "0"],
-    seconds: string[] = ["0", "0"];
+  const hours: string[] = ['0', '0'],
+    minutes: string[] = ['0', '0'],
+    seconds: string[] = ['0', '0'];
   const renderedTime = [hours, minutes, seconds];
 
-  const elementTimeUnits = ["hours", "minutes", "seconds"];
+  const elementTimeUnits = ['hours', 'minutes', 'seconds'];
   let passedMinutes = 0;
 
   const resetClock = () => {
@@ -25,22 +29,31 @@ const createClockRender = (
       const element = elementTimeUnits[index];
       const [firstMinUnitElement, secondMinUnitElement] = timeElement[element];
 
-      firstMinUnitElement.innerHTML = "0";
-      secondMinUnitElement.innerHTML = "0";
+      firstMinUnitElement.innerHTML = '0';
+      secondMinUnitElement.innerHTML = '0';
 
-      unit[0] = "0";
-      unit[1] = "0";
+      unit[0] = '0';
+      unit[1] = '0';
     });
+
     passedMinutes = 0;
+
+    setProgressBar(0);
   };
 
   const alertMinutes = (currentTime: number) => {
     const minutes = secondsToMinutes(currentTime);
     if (minutes && minutes > passedMinutes) {
       passedMinutes = minutes;
-      alertOnAlertSpan(`${ minutes > 1 ? `${minutes} minutos decorridos` : `${minutes} minuto decorrido`}`);
+      alertOnAlertSpan(
+        `${
+          minutes > 1
+            ? `${minutes} minutos decorridos`
+            : `${minutes} minuto decorrido`
+        }`
+      );
     }
-  }
+  };
 
   const setMinUnitElement = ({ value, unitIndex, minUnitIndex }) => {
     const unitElement = elementTimeUnits[unitIndex];
@@ -65,25 +78,23 @@ const createClockRender = (
 
   function setProgressBar(percentage: number) {
     try {
-      progressBarElement.style.width = percentage.toFixed(2) + "%";
-      progressBarElement.setAttribute("aria-valuenow", percentage.toFixed(0));
+      progressBarElement.style.width = percentage.toFixed(2) + '%';
+      progressBarElement.setAttribute('aria-valuenow', percentage.toFixed(0));
     } catch (err) {
       throw new Error(err);
     }
   }
 
   const getTimeUnitAsArray = (value: number) =>
-    formatTimeUnit(value).split("") as [string, string];
+    formatTimeUnit(value).split('') as [string, string];
 
-  function setClock(currentTime: number, time?: number) {
-    alertMinutes(currentTime)
+  function setClock(currentTime: number) {
+    alertMinutes(currentTime);
 
     const renderReadableTime = (value: number, unitIndex: number) => {
       const [secondMinUnit, firstMinUnit] = getTimeUnitAsArray(value);
-      const [secondRenderedMinUnit, firstRenderedMinUnit] = renderedTime[
-        unitIndex
-      ];
-
+      const [secondRenderedMinUnit, firstRenderedMinUnit] =
+        renderedTime[unitIndex];
 
       if (firstMinUnit !== firstRenderedMinUnit) {
         const minUnitIndex = 1;
